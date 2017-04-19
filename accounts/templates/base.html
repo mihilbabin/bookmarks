@@ -1,0 +1,79 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'accounts/css/base.css' %}" media="screen">
+</head>
+
+<body>
+    <div id="header">
+        <span class="logo"><a href="{% url 'dashboard' %}">Bookmarks</a></span>
+        {% if request.user.is_authenticated %}
+        <ul class="menu">
+          <li {% if section == "dashboard" %}class="selected"{% endif %}>
+            <a href="{% url "dashboard" %}">My dashboard</a>
+          </li>
+          <li {% if section == "images" %}class="selected"{% endif %}>
+            <a href="{% url 'images:list' %}">Images</a>
+          </li>
+          <li {% if section == "people" %}class="selected"{% endif %}>
+            <a href="{% url 'user_list' %}">People</a>
+          </li>
+        </ul>
+        {% endif %}
+        <span class="user">
+        {% if request.user.is_authenticated %}
+          Hello {{ request.user.username }},
+          <a href="{% url "logout" %}">Logout</a>
+          {% else %}
+          <a href="{% url "register" %}">Register</a>
+          <a href="{% url "login" %}">Log-in</a>
+        {% endif %}
+      </span>
+    </div>
+    {% if messages %}
+<ul class="messages">
+{% for message in messages %}
+<li class="{{ message.tags }}">
+{{ message|safe }}
+<a href="#" class="close">✖</a>
+</li>
+{% endfor %}
+</ul>
+{% endif %}
+    <div id="content">
+        {% block content %} {% endblock %}
+    </div>
+    <script type="text/javascript">
+   if (window.location.hash == '#_=_') {
+      window.location.hash = '';
+   }
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src=" http://cdn.jsdelivr.net/jquery.cookie/1.4.1/jquery.
+cookie.min.js "></script>
+<script>
+  var csrfToken = $.cookie('csrftoken');
+  function csrfSafeMethod(method) {
+    return (/^(GET|HEAD|OPTION|TRACE)$/.test(method));
+  }
+  $.ajaxSetup({
+    beforeSend: function (xhr, settings) {
+      if (!csrfSafeMethod(settings.type) && !this.crossDomain)
+        xhr.setRequestHeader('X-CSRFToken', csrfToken);
+    }
+  });
+  $(document).ready(function(){
+    {% block domready %}
+    {% endblock %}
+  });
+</script>
+{% block js %}
+
+{% endblock %}
+</body>
+
+</html>
